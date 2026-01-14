@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getMatchedUsers, User, PersonalityType } from '@/lib/supabase';
+import { getMatchedUsers, User } from '@/lib/supabase';
 import { personalityDescriptions } from '@/lib/questions';
 
 // Dummy users for each personality type (shown when no database matches)
@@ -185,7 +185,7 @@ export default function DashboardPage() {
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">Your Matches</h2>
           <p className="text-zinc-500 mb-8">
-            People with similar personalities who'd make great teammates
+            People with similar personalities who&apos;d make great teammates
           </p>
 
           {matchedUsers.length === 0 ? (
