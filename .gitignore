@@ -24,9 +24,7 @@ yarn-error.log*
 
 # Debug
 .psc
-.env.development.local
-.env.test.local
-.env.production.local
+
 
 # IDE
 .vscode/
