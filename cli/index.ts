@@ -15,7 +15,7 @@ if (!API_KEY) {
 
 const client = new GoogleGenerativeAI(API_KEY);
 
-async function chat(prompt: string): Promise<string> {
+async function generateResponse(prompt: string): Promise<string> {
   const model = client.getGenerativeModel({ model: MODEL });
 
   const result = await model.generateContent(prompt);
@@ -47,7 +47,7 @@ async function interactiveMode(): Promise<void> {
       }
 
       try {
-        const response = await chat(input);
+        const response = await generateResponse(input);
         console.log(`\nAssistant: ${response}\n`);
       } catch (error) {
         console.error("Error:", (error as Error).message);
@@ -60,9 +60,9 @@ async function interactiveMode(): Promise<void> {
   askQuestion();
 }
 
-async function pipeMode(prompt: string): Promise<void> {
+async function singlePromptMode(prompt: string): Promise<void> {
   try {
-    const response = await chat(prompt);
+    const response = await generateResponse(prompt);
     console.log(response);
   } catch (error) {
     console.error("Error:", (error as Error).message);
@@ -77,7 +77,7 @@ async function main(): Promise<void> {
     await interactiveMode();
   } else {
     const prompt = args.join(" ");
-    await pipeMode(prompt);
+    await singlePromptMode(prompt);
   }
 }
 
