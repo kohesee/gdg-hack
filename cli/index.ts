@@ -16,13 +16,30 @@ if (!API_KEY) {
 const client = new GoogleGenerativeAI(API_KEY);
 
 async function generateResponse(prompt: string): Promise<string> {
-  const model = client.getGenerativeModel({ model: MODEL });
-
-  const result = await model.generateContent(prompt);
-  const response = result.response;
-
-  return response.text();
+  try {
+    const model = client.getGenerativeModel({ model: MODEL });
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    return response.text();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      if (error.message.includes("API_KEY")) {
+        throw new Error("Invalid API key. Please check your GEMINI_API_KEY.");
+      } else if (error.message.includes("rate")) {
+        throw new Error(
+          "Rate limit exceeded. Please wait before making another request."
+        );
+      } else if (error.message.includes("model")) {
+        throw new Error(
+          `Model '${MODEL}' not found. Please check GEMINI_MODEL environment variable.`
+        );
+      }
+      throw error;
+    }
+    throw new Error("An unexpected error occurred while calling the API.");
+  }
 }
+
 
 async function interactiveMode(): Promise<void> {
   const rl = readline.createInterface({
@@ -33,42 +50,47 @@ async function interactiveMode(): Promise<void> {
   console.log("Gemini CLI - Interactive Mode");
   console.log("Type your prompt and press Enter. Type 'exit' to quit.\n");
 
-  const askQuestion = (): void => {
-    rl.question("You: ", async (input) => {
-      if (input.toLowerCase() === "exit") {
-        console.log("Goodbye!");
-        rl.close();
-        return;
-      }
+  const processInput = async (): Promise<void> => {
+    return new Promise((resolve) => {
+      rl.question("You: ", async (input) => {
+        if (input.toLowerCase() === "exit") {
+          console.log("Goodbye!");
+          rl.close();
+          resolve();
+          return;
+        }
 
-      if (input.trim() === "") {
-        askQuestion();
-        return;
-      }
+        if (input.trim() !== "") {
+          try {
+            const response = await generateResponse(input);
+            console.log(`\nAssistant: ${response}\n`);
+          } catch (error) {
+            console.error("Error:", (error as Error).message);
+          }
+        }
 
-      try {
-        const response = await generateResponse(input);
-        console.log(`\nAssistant: ${response}\n`);
-      } catch (error) {
-        console.error("Error:", (error as Error).message);
-      }
-
-      askQuestion();
+        // Continue with next prompt instead of recursing
+        processInput().then(resolve);
+      });
     });
   };
 
-  askQuestion();
+  await processInput();
 }
+
 
 async function singlePromptMode(prompt: string): Promise<void> {
   try {
     const response = await generateResponse(prompt);
     console.log(response);
   } catch (error) {
-    console.error("Error:", (error as Error).message);
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
+    console.error("Error:", errorMessage);
     process.exit(1);
   }
 }
+
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
