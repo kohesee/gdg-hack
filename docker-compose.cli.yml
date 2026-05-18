@@ -9,5 +9,4 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     stdin_open: true
     tty: true
-    volumes:
-      - /dev/stdin:/dev/stdin
+

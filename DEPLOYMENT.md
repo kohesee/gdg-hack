@@ -66,12 +66,14 @@ docker-compose -f docker-compose.cli.yml run --rm gemini-cli
    # Install dependencies
    npm install
    
-   # Set environment variable
+   # Set environment variables
    export GEMINI_API_KEY=your_key
+   export GEMINI_MODEL=gemini-pro  # Optional: specify model
    
    # Run the CLI
    npm run cli
    ```
+
 
 3. **Keep it running with PM2:**
    ```bash
@@ -269,9 +271,9 @@ For production setups with high traffic:
 
 ## Support and Troubleshooting
 
-- Check that Node.js version is 18+
+- Ensure Node.js version is 18 or higher
 - Verify GEMINI_API_KEY is set correctly
-- Ensure network connectivity
+- Ensure network connectivity to Gemini API
 - Check API rate limits and quotas
 - Review Gemini API documentation for model availability
 

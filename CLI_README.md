@@ -103,6 +103,7 @@ docker run -e GEMINI_API_KEY=your_key_here gemini-cli "What is AI?"
 ### Environment Variables
 
 - `GEMINI_API_KEY` (required): Your Google Gemini API key
+- `GEMINI_MODEL` (optional): The Gemini model to use. Defaults to `gemini-pro`. You can use other models like `gemini-pro-vision` if available.
 
 ## Examples
 
