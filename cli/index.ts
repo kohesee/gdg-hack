@@ -50,32 +50,28 @@ async function interactiveMode(): Promise<void> {
   console.log("Gemini CLI - Interactive Mode");
   console.log("Type your prompt and press Enter. Type 'exit' to quit.\n");
 
-  const processInput = async (): Promise<void> => {
-    return new Promise((resolve) => {
-      rl.question("You: ", async (input) => {
-        if (input.toLowerCase() === "exit") {
-          console.log("Goodbye!");
-          rl.close();
-          resolve();
-          return;
-        }
-
-        if (input.trim() !== "") {
-          try {
-            const response = await generateResponse(input);
-            console.log(`\nAssistant: ${response}\n`);
-          } catch (error) {
-            console.error("Error:", (error as Error).message);
-          }
-        }
-
-        // Continue with next prompt instead of recursing
-        processInput().then(resolve);
+  while (true) {
+    const input = await new Promise<string>((resolve) => {
+      rl.question("You: ", (answer) => {
+        resolve(answer);
       });
     });
-  };
 
-  await processInput();
+    if (input.toLowerCase() === "exit") {
+      console.log("Goodbye!");
+      rl.close();
+      break;
+    }
+
+    if (input.trim() !== "") {
+      try {
+        const response = await generateResponse(input);
+        console.log(`\nAssistant: ${response}\n`);
+      } catch (error) {
+        console.error("Error:", (error as Error).message);
+      }
+    }
+  }
 }
 
 
